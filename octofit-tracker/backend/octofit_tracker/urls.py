@@ -17,7 +17,10 @@ import os
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
+
 from . import views
+import os
+
 
 codespace_name = os.environ.get('CODESPACE_NAME')
 if codespace_name:
@@ -32,9 +35,23 @@ router.register(r'activities', views.ActivityViewSet)
 router.register(r'leaderboard', views.LeaderboardViewSet)
 router.register(r'workouts', views.WorkoutViewSet)
 
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+
+@api_view(['GET'])
+def api_root(request, format=None):
+    return Response({
+        'users': f'{base_url}/api/users/',
+        'teams': f'{base_url}/api/teams/',
+        'activities': f'{base_url}/api/activities/',
+        'leaderboard': f'{base_url}/api/leaderboard/',
+        'workouts': f'{base_url}/api/workouts/',
+    })
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.api_root, name='api-root'),
-    path('api/', views.api_root, name='api-root'),
+    path('', api_root, name='api-root'),
+    path('api/', api_root, name='api-root'),
     path('api/', include(router.urls)),
 ]
